@@ -45,7 +45,7 @@ def signup():
             UID = login_session['users']['localId']
             user = {'fullname':request.form['full_name'],'username':request.form['username'],'bio':request.form['bio']}
             db.child("users").child(UID).set(user)
-            return redirect(url_for("add_tweet"))
+            return  redirect(url_for('add_tweet'))
         except Exception as e:
             print(e)
             return redirect(url_for('signup'))
@@ -59,16 +59,21 @@ def add_tweet():
             UID = login_session['users']['localId']
             tweet = {'title':request.form['title'], 'text': request.form['text'], 'UID': UID}
             db.child("users").child(UID).push(tweet)
-            db.child("tweets").child(UID).set(tweet)
+            db.child("tweets").push(tweet)
             return render_template("add_tweet.html")
         except:
             return render_template("signup.html")
     return render_template("add_tweet.html")
 @app.route('/all_tweets')
 def all_tweets():
-    UID = login_session['users']['localId']
-    AT = db.child(UID).child().get().val()
-    return render_template("tweets.html", at = AT)
+    AT = db.child("tweets").get().val()
+    filtered = {}
+    counter=1
+    for tweet_key in AT:
+            current = {'title': AT[tweet_key]['title'], 'text': AT[tweet_key]['text']}
+            filtered[counter] = current
+            counter+=1
+    return render_template("tweets.html", at = filtered)
 
 if __name__ == '__main__':
     app.run(debug=True)

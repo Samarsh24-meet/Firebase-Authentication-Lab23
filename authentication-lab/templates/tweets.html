@@ -6,7 +6,8 @@
 </head>
 <body>
     {% for t in at %}
-        <h2>{{t}}</h2>
+        <h2>Title: {{at[t]['title']}}</h2>
+        <h2>Text: {{at[t]['text']}}</h2>
     {% endfor %}
 </body>
 </html>
